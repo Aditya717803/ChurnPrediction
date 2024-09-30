@@ -9,8 +9,8 @@ const CustomerChurnForm = () => {
     Tenure: '',
     Balance: '',
     NumOfProducts: '',
-    HasCrCard: '0', // Default to 0 (No)
-    IsActiveMember: '0', // Default to 0 (No)
+    HasCrCard: '0',
+    IsActiveMember: '0',
     EstimatedSalary: ''
   });
 
@@ -20,31 +20,30 @@ const CustomerChurnForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle Switch (Checkbox) for HasCrCard and IsActiveMember
   const handleSwitch = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.checked ? '1' : '0' // 1 for Yes, 0 for No
+      [e.target.name]: e.target.checked ? '1' : '0'
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    fetch('http://localhost:5000/predict', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    })
-      .then(response => response.json())
-      .then(data => {
-        setResult(data.prediction);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
+    
+    try {
+      const response = await fetch('http://localhost:5000/predict', { // Update with your server URL
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
       });
+      
+      const data = await response.json();
+      setResult(data.prediction);
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (
@@ -53,9 +52,9 @@ const CustomerChurnForm = () => {
         <h1 className="text-4xl font-mono text-center mb-8 text-gray-900">Customer Churn Prediction</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           
-          {/* Credit Score */}
+          
           <div className="flex flex-col">
-            <label className="text-gray-700 mb-2 text-left text-lg font-bold ">Credit Score</label>
+            <label className="text-gray-700 mb-2 text-left text-lg font-bold">Credit Score</label>
             <input
               className="p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-300 transition"
               name="CreditScore"
@@ -75,21 +74,20 @@ const CustomerChurnForm = () => {
             />
           </div>
 
-
+          
           <div className="flex flex-col md:flex-row items-center gap-x-4 mb-2">
-          <label className="text-gray-700 font-bold mb-2 md:mb-0 text-left text-lg">Gender</label>
-          <select
-            name="Gender"
-            value={formData.Gender}
-            onChange={handleChange}
-            className="p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-300 transition w-full md:w-auto"
-          >
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        </div>
-
+            <label className="text-gray-700 font-bold mb-2 md:mb-0 text-left text-lg">Gender</label>
+            <select
+              name="Gender"
+              value={formData.Gender}
+              onChange={handleChange}
+              className="p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-300 transition w-full md:w-auto"
+            >
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
 
           
           <div className="flex flex-col">
@@ -102,7 +100,7 @@ const CustomerChurnForm = () => {
             />
           </div>
 
-          {/* Tenure */}
+          
           <div className="flex flex-col">
             <label className="text-gray-700 mb-2 text-left text-lg font-bold">Tenure</label>
             <input
@@ -113,7 +111,7 @@ const CustomerChurnForm = () => {
             />
           </div>
 
-          {/* Balance */}
+          
           <div className="flex flex-col">
             <label className="text-gray-700 mb-2 text-left text-lg font-bold">Balance</label>
             <input
@@ -124,9 +122,8 @@ const CustomerChurnForm = () => {
             />
           </div>
 
-        
           <div className="flex flex-col">
-            <label className="text-gray-700 mb-2 text-left text-lg font-bold ">Number of Products</label>
+            <label className="text-gray-700 mb-2 text-left text-lg font-bold">Number of Products</label>
             <input
               className="p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-300 transition"
               name="NumOfProducts"
@@ -135,36 +132,34 @@ const CustomerChurnForm = () => {
             />
           </div>
 
+          
           <div className="flex md:flex-row gap-x-32">
-  {/* Has Credit Card Switch */}
-          <div className="flex items-center space-x-2 px-4 md:px-9 bg-gray-50 rounded-lg shadow-md p-4">
-            <label className="text-gray-700">Has Credit Card?</label>
-            <input
-              type="checkbox"
-              name="HasCrCard"
-              checked={formData.HasCrCard === '1'}
-              onChange={handleSwitch}
-              className="h-5 w-5 text-gray-600 focus:ring-purple-300 transition"
-            />
+            <div className="flex items-center space-x-2 px-4 md:px-9 bg-gray-50 rounded-lg shadow-md p-4">
+              <label className="text-gray-700">Has Credit Card?</label>
+              <input
+                type="checkbox"
+                name="HasCrCard"
+                checked={formData.HasCrCard === '1'}
+                onChange={handleSwitch}
+                className="h-5 w-5 text-gray-600 focus:ring-purple-300 transition"
+              />
+            </div>
+
+            <div className="flex items-center space-x-2 px-4 md:px-9 bg-gray-50 rounded-lg shadow-md p-4">
+              <label className="text-gray-700">Is Active Member?</label>
+              <input
+                type="checkbox"
+                name="IsActiveMember"
+                checked={formData.IsActiveMember === '1'}
+                onChange={handleSwitch}
+                className="h-5 w-5 text-gray-600 focus:ring-purple-300 transition"
+              />
+            </div>
           </div>
 
-          {/* Is Active Member Switch */}
-          <div className="flex items-center space-x-2 px-4 md:px-9 bg-gray-50 rounded-lg shadow-md p-4">
-            <label className="text-gray-700">Is Active Member?</label>
-            <input
-              type="checkbox"
-              name="IsActiveMember"
-              checked={formData.IsActiveMember === '1'}
-              onChange={handleSwitch}
-              className="h-5 w-5 text-gray-600 focus:ring-purple-300 transition"
-            />
-          </div>
-        </div>
-
-
-          {/* Estimated Salary */}
+          
           <div className="flex flex-col">
-            <label className="text-gray-700 mb-2 text-left text-lg font-bold ">Estimated Salary</label>
+            <label className="text-gray-700 mb-2 text-left text-lg font-bold">Estimated Salary</label>
             <input
               className="p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-300 transition"
               name="EstimatedSalary"
